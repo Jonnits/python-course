@@ -1,6 +1,6 @@
-# Python Course
+# CareerFoundry Python Course
 
-This repository contains my work for the Python specialization course, organized by exercise.
+This repository contains my work for the CareerFoundry Python course, organized by exercise.
 
 ## Exercise 1.1: Python Environment Setup and Basic Scripting
 
@@ -16,6 +16,15 @@ This exercise focused on setting up a Python development environment, creating b
 5. **Requirements File**: Generated `requirements.txt` to document all installed packages
 6. **Environment Replication**: Created a second environment `cf-python-copy` and installed packages from `requirements.txt` to demonstrate environment portability
 
+### Project Structure
+
+```
+.
+└── Exercise 1.1/
+    ├── add.py              # Script that adds two user-input numbers
+    ├── hello.py            # Simple "Hello, World!" script
+    └── requirements.txt    # List of installed packages and versions
+```
 
 ### Setup Instructions
 
@@ -50,6 +59,25 @@ python --version
 ipython --version
 ```
 
+### Running the Scripts
+
+#### Run add.py
+```bash
+python Exercise\ 1.1/add.py
+```
+The script will prompt you to enter two numbers, then display their sum.
+
+#### Run hello.py
+```bash
+python Exercise\ 1.1/hello.py
+```
+This will print "Hello, World!" to the console.
+
+#### Launch IPython Shell
+```bash
+ipython
+```
+
 ### Requirements
 
 - Python 3.8.7
@@ -78,7 +106,7 @@ This exercise focuses on building data structures to store recipe information fo
 
 1. **Created recipe_1**: A dictionary structure for storing individual recipe information (name, cooking_time, ingredients)
 2. **Created all_recipes**: A list structure to store multiple recipes sequentially
-3. **Added 5 recipes**: Created recipe_1 through recipe_5 and added them to all_recipes
+3. **Added 5 more recipes**: Created recipe_1 through recipe_6 and added them to all_recipes
 4. **Printed ingredients**: Displayed the ingredients list for each recipe as separate lists
 
 ### Project Structure
@@ -86,12 +114,13 @@ This exercise focuses on building data structures to store recipe information fo
 ```
 .
 └── Exercise 1.2/
-    ├── README.md              # Exercise documentation
     ├── learning_journal.md    # Learning journal
-    ├── Step 1.png            # Screenshot: Creating recipe_1
-    ├── Step 2.png            # Screenshot: Creating all_recipes
-    ├── Step 3.png            # Screenshot: Adding 4 more recipes
-    └── Step 4.png            # Screenshot: Printing ingredients
+    ├── 1. Activated virtual environment.png            # Screenshot: Activating virtual environment
+    ├── 2. Activated IPython.png            # Screenshot: Activating IPython
+    ├── 3. Recipe 1 structure.png            # Screenshot: Creating structure for Recipe 1
+    ├── 4. All recipes inc. Recipe 1.png            # Screenshot: Printing 'all_recipes' to show successful addition of Recipe 1
+    ├── 5. 5 more recipes in All recipes.png            # Screenshot: Adding 5 more drink recipes to 'all-recipes' and showing successful addition
+    └── 6. All recipe ingredients.png            # Screenshot: Printing ingredients from all recipes
 ```
 
 ### Data Structure Choices
@@ -101,4 +130,3 @@ I chose to use a dictionary for storing individual recipe information because it
 
 **For all_recipes (outer structure):**
 I chose to use a list for storing multiple recipes because it provides sequential storage with the ability to append, modify, and iterate through recipes easily. Lists maintain insertion order and allow for dynamic growth as new recipes are added. This sequential nature makes it straightforward to access recipes by index, iterate through all recipes, and perform operations like printing ingredients for each recipe in the collection.
-
