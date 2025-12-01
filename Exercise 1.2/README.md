@@ -1,80 +1,133 @@
-# Exercise 1.2: Recipe Data Structures
+# CareerFoundry Python Course
 
-## Overview
-This exercise focuses on building data structures to store recipe information for a Recipe app. The task involves creating individual recipe structures and an outer structure to store multiple recipes sequentially.
+This repository contains my work for the CareerFoundry Python course, organized by exercise.
 
-## Objectives
-- Create a data structure to store individual recipe information
-- Create an outer structure to store multiple recipes
-- Understand when to use dictionaries vs. lists vs. tuples
-- Practice working with nested data structures
+## Exercise 1.1: Python Environment Setup and Basic Scripting
 
-## What Was Accomplished
+### Overview
+This exercise focused on setting up a Python development environment, creating basic Python scripts, and learning about virtual environments and package management.
 
-1. **Created recipe_1**: A dictionary structure containing:
-   - `name` (str): Recipe name
-   - `cooking_time` (int): Cooking time in minutes
-   - `ingredients` (list): List of ingredients as strings
+### What Was Accomplished
 
-2. **Created all_recipes**: A list structure to store multiple recipes sequentially
+1. **Python Installation**: Verified Python 3.8.7 installation
+2. **Virtual Environment Setup**: Created a virtual environment named `cf-python-base` using Python 3.8.7
+3. **Basic Script Creation**: Created `add.py` - a script that takes two user inputs and adds them together
+4. **IPython Installation**: Set up IPython shell in the virtual environment for enhanced interactive Python development
+5. **Requirements File**: Generated `requirements.txt` to document all installed packages
+6. **Environment Replication**: Created a second environment `cf-python-copy` and installed packages from `requirements.txt` to demonstrate environment portability
 
-3. **Added 5 recipes total**: Created recipe_1 through recipe_5 and added them to all_recipes
-
-4. **Printed ingredients**: Displayed the ingredients list for each recipe
-
-## Project Structure
+### Project Structure
 
 ```
-Exercise 1.2/
-├── README.md              # This file
-├── learning_journal.md    # Learning journal documenting the exercise
-├── Step 1.png            # Screenshot of creating recipe_1
-├── Step 2.png            # Screenshot of creating all_recipes
-├── Step 3.png            # Screenshot of adding 4 more recipes
-└── Step 4.png            # Screenshot of printing ingredients
+.
+└── Exercise 1.1/
+    ├── add.py              # Script that adds two user-input numbers
+    ├── hello.py            # Simple "Hello, World!" script
+    └── requirements.txt    # List of installed packages and versions
 ```
 
-## Data Structure Choices
+### Setup Instructions
 
-### For recipe_1 (individual recipe structure)
-I chose to use a **dictionary** for storing individual recipe information because it provides key-value pairs that allow for named, semantic access to recipe attributes. Unlike tuples or lists, dictionaries enable accessing data by meaningful keys (e.g., `recipe_1['name']`) rather than positional indices, which makes the code more readable and maintainable. Dictionaries also offer flexibility for future modifications, such as adding new recipe attributes without restructuring the entire data model.
+#### 1. Create and Activate Virtual Environment
 
-### For all_recipes (outer structure)
-I chose to use a **list** for storing multiple recipes because it provides sequential storage with the ability to append, modify, and iterate through recipes easily. Lists maintain insertion order and allow for dynamic growth as new recipes are added. This sequential nature makes it straightforward to access recipes by index, iterate through all recipes, and perform operations like printing ingredients for each recipe in the collection.
+```bash
+# Create virtual environment with Python 3.8.7
+python3.8 -m venv ~/.virtualenvs/cf-python-base
 
-## How to Run
+# Activate the environment
+cd ~/.virtualenvs/cf-python-base/bin
+source activate
+```
 
-This exercise was completed in an IPython shell. To replicate:
+#### 2. Install Dependencies
 
-1. Activate your virtual environment:
-   ```bash
-   source ~/.virtualenvs/cf-python-base/bin/activate
-   ```
+```bash
+# Navigate to project directory
+cd /path/to/this/repository/Exercise\ 1.1/
 
-2. Launch IPython:
-   ```bash
-   ipython
-   ```
+# Install packages from requirements.txt
+pip install -r requirements.txt
+```
 
-3. Follow the steps shown in the screenshots (Step 1.png through Step 4.png)
+#### 3. Verify Installation
 
-## Screenshots
+```bash
+# Check Python version
+python --version
 
-- **Step 1**: Creating recipe_1 (Tea recipe)
-- **Step 2**: Creating all_recipes and adding recipe_1
-- **Step 3**: Creating and adding 4 additional recipes
-- **Step 4**: Printing ingredients for all recipes
+# Verify IPython installation
+ipython --version
+```
 
-## Key Learnings
+### Running the Scripts
 
-- Understanding when to use dictionaries vs. lists vs. tuples
-- Working with nested data structures
-- Building a foundation for a Recipe app data model
-- Accessing nested data using bracket notation
+#### Run add.py
+```bash
+python Exercise\ 1.1/add.py
+```
+The script will prompt you to enter two numbers, then display their sum.
 
-## Requirements
+#### Run hello.py
+```bash
+python Exercise\ 1.1/hello.py
+```
+This will print "Hello, World!" to the console.
+
+#### Launch IPython Shell
+```bash
+ipython
+```
+
+### Requirements
 
 - Python 3.8.7
-- IPython 8.12.3
-- Virtual environment (cf-python-base)
+- pip (Python package installer)
+- Virtual environment support (venv module)
 
+### Installed Packages
+
+The following packages are installed in the virtual environment (see `Exercise 1.1/requirements.txt` for complete list):
+
+- **ipython** (8.12.3) - Enhanced interactive Python shell
+- Dependencies: traitlets, jedi, prompt-toolkit, pygments, and others
+
+### Notes
+
+- All scripts were developed and tested in a virtual environment to maintain project isolation
+- The requirements.txt file ensures consistent package versions across different environments
+- This exercise demonstrates best practices for Python project setup and dependency management
+
+## Exercise 1.2: Recipe Data Structures
+
+### Overview
+This exercise focuses on building data structures to store recipe information for a Recipe app. The task involves creating individual recipe structures and an outer structure to store multiple recipes sequentially.
+
+### What Was Accomplished
+
+1. **Created recipe_1**: A dictionary structure for storing individual recipe information (name, cooking_time, ingredients)
+2. **Created all_recipes**: A list structure to store multiple recipes sequentially
+3. **Added 5 more recipes**: Created recipe_1 through recipe_6 and added them to all_recipes
+4. **Printed ingredients**: Displayed the ingredients list for each recipe as separate lists
+
+### Project Structure
+
+```
+.
+└── Exercise 1.2/
+    ├── README.md              # Exercise documentation
+    ├── learning_journal.md    # Learning journal
+    ├── 1. Activated virtual environment.png            # Screenshot: Activating virtual environment
+    ├── 2. Activated IPython.png            # Screenshot: Activating IPython
+    ├── 3. Recipe 1 structure.png            # Screenshot: Creating structure for Recipe 1
+    ├── 4. All recipes inc. Recipe 1.png            # Screenshot: Printing 'all_recipes' to show successful addition of Recipe 1
+    ├── 5. 5 more recipes in All recipes.png            # Screenshot: Adding 5 more drink recipes to 'all-recipes' and showing successful addition
+    └── 6. All recipe ingredients.png            # Screenshot: Printing ingredients from all recipes
+```
+
+### Data Structure Choices
+
+**For recipe_1 (individual recipe structure):**
+I chose to use a dictionary for storing individual recipe information because it provides key-value pairs that allow for named, semantic access to recipe attributes. Unlike tuples or lists, dictionaries enable accessing data by meaningful keys (e.g., `recipe_1['name']`) rather than positional indices, which makes the code more readable and maintainable. Dictionaries also offer flexibility for future modifications, such as adding new recipe attributes without restructuring the entire data model.
+
+**For all_recipes (outer structure):**
+I chose to use a list for storing multiple recipes because it provides sequential storage with the ability to append, modify, and iterate through recipes easily. Lists maintain insertion order and allow for dynamic growth as new recipes are added. This sequential nature makes it straightforward to access recipes by index, iterate through all recipes, and perform operations like printing ingredients for each recipe in the collection.
