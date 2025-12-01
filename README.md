@@ -1,6 +1,6 @@
-# CareerFoundry Python Course
+# Python Course
 
-This repository contains my work for the CareerFoundry Python course, organized by exercise.
+This repository contains my work for the Python specialization course, organized by exercise.
 
 ## Exercise 1.1: Python Environment Setup and Basic Scripting
 
@@ -16,15 +16,6 @@ This exercise focused on setting up a Python development environment, creating b
 5. **Requirements File**: Generated `requirements.txt` to document all installed packages
 6. **Environment Replication**: Created a second environment `cf-python-copy` and installed packages from `requirements.txt` to demonstrate environment portability
 
-### Project Structure
-
-```
-.
-└── Exercise 1.1/
-    ├── add.py              # Script that adds two user-input numbers
-    ├── hello.py            # Simple "Hello, World!" script
-    └── requirements.txt    # List of installed packages and versions
-```
 
 ### Setup Instructions
 
@@ -57,25 +48,6 @@ python --version
 
 # Verify IPython installation
 ipython --version
-```
-
-### Running the Scripts
-
-#### Run add.py
-```bash
-python Exercise\ 1.1/add.py
-```
-The script will prompt you to enter two numbers, then display their sum.
-
-#### Run hello.py
-```bash
-python Exercise\ 1.1/hello.py
-```
-This will print "Hello, World!" to the console.
-
-#### Launch IPython Shell
-```bash
-ipython
 ```
 
 ### Requirements
