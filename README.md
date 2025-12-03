@@ -209,3 +209,95 @@ ipython
 - Difficulty is calculated dynamically based on recipe attributes, not stored
 - All ingredients are displayed in alphabetical order for better readability
 - This exercise demonstrates practical application of functions, loops, and conditional logic in a real-world scenario
+
+## Exercise 1.4: Recipe Storage and Search with File I/O
+
+### Overview
+This exercise extends the recipe management system by adding data storage using Python's `pickle` module. The exercise is divided into two scripts: one for inputting recipes and saving them to a binary file, and another for searching recipes by ingredient.
+
+### What Was Accomplished
+
+1. **Created `recipe_input.py`**: A script that collects recipes from users and stores them in a binary file
+   - Implements `calc_difficulty()` function to calculate recipe difficulty
+   - Implements `take_recipe()` function to collect recipe information from users
+   - Handles file operations with try-except-else-finally blocks
+   - Supports both creating new files and appending to existing files
+   - Uses pickle to serialize and save data structures
+
+2. **Created `recipe_search.py`**: A script that loads recipes from a binary file and allows searching by ingredient
+   - Implements `display_recipe()` function to format and display recipe details
+   - Implements `search_ingredient()` function to search for recipes containing a specific ingredient
+   - Displays available ingredients with numbered options using `enumerate()`
+   - Includes error handling for invalid user input and missing files
+
+3. **File I/O Operations**: 
+   - Learned to work with binary files using pickle module
+   - Implemented proper exception handling for file operations
+   - Created persistent data storage that survives between script executions
+
+4. **Exception Handling**: 
+   - Used try-except-else-finally blocks for robust error handling
+   - Handled FileNotFoundError for new file creation
+   - Implemented user input validation with error messages
+
+### Project Structure
+
+```
+.
+└── Exercise 1.4/
+    ├── recipe_input.py                                    # Script for inputting and saving recipes
+    ├── recipe_search.py                                   # Script for searching recipes by ingredient
+    ├── learning_journal.md                                # Learning journal
+    ├── Part 1 Step 1 - Activating venv.png               # Screenshot: Activating virtual environment
+    ├── Part 1 Step 2 - Creating new file.png             # Screenshot: Creating new binary file
+    ├── Part 1 Step 3 - Saving recipes.png                # Screenshot: Saving recipes to file
+    ├── Part 1 Step 4 - Adding recipe to existing file.png # Screenshot: Adding recipes to existing file
+    ├── Part 2 Step 1 - Running recipe search.png        # Screenshot: Running recipe search script
+    ├── Part 2 Step 2 - Searching for recipes by ingredient.png # Screenshot: Searching for recipes
+    └── Part 2 Step 3 - Search error handling.png        # Screenshot: Error handling demonstration
+```
+
+### Running the Scripts
+
+#### Run recipe_input.py
+```bash
+# Make sure virtual environment is activated
+source venv/bin/activate
+
+# Run the script
+python "Exercise 1.4/recipe_input.py"
+```
+
+The script will:
+1. Prompt you to enter a filename for storing recipes (e.g., `my_recipes.bin`)
+2. Attempt to load existing recipes from that file (or create new data if file doesn't exist)
+3. Ask how many recipes you'd like to enter
+4. Collect recipe information for each recipe (name, cooking time, ingredients)
+5. Calculate difficulty for each recipe automatically
+6. Save all recipes and ingredients to the binary file
+
+#### Run recipe_search.py
+```bash
+# Make sure virtual environment is activated
+source venv/bin/activate
+
+# Run the script
+python "Exercise 1.4/recipe_search.py"
+```
+
+The script will:
+1. Prompt you to enter the filename containing your recipes
+2. Load the recipes from the binary file
+3. Display all available ingredients with numbers
+4. Allow you to search for recipes containing a specific ingredient
+5. Display all recipes that contain the selected ingredient
+
+### Notes
+
+- The pickle module allows you to save complex Python data structures (lists, dictionaries) to binary files
+- Exception handling is crucial for file operations since files may not exist
+- The try-except-else-finally structure ensures proper resource management
+- Data structure consistency is important when loading and saving files
+- The scripts can be run multiple times to add more recipes to existing files
+- Error handling provides user-friendly messages when files are missing or input is invalid
+- This exercise demonstrates real-world file persistence patterns used in many applications
