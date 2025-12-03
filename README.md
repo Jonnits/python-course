@@ -130,3 +130,82 @@ I chose to use a dictionary for storing individual recipe information because it
 
 **For all_recipes (outer structure):**
 I chose to use a list for storing multiple recipes because it provides sequential storage with the ability to append, modify, and iterate through recipes easily. Lists maintain insertion order and allow for dynamic growth as new recipes are added. This sequential nature makes it straightforward to access recipes by index, iterate through all recipes, and perform operations like printing ingredients for each recipe in the collection.
+
+## Exercise 1.3: Recipe Management with Difficulty Calculation
+
+### Overview
+This exercise builds upon Exercise 1.2 by creating an interactive recipe management system that collects recipes from user input, tracks unique ingredients across all recipes, calculates recipe difficulty based on cooking time and ingredient count, and displays organized recipe information.
+
+### What Was Accomplished
+
+1. **Created `take_recipe()` function**: A reusable function that collects recipe details (name, cooking time, ingredients) from user input and returns a dictionary
+2. **Dynamic recipe collection**: Implemented a loop-based system to collect any number of recipes from the user
+3. **Unique ingredient tracking**: Built logic to maintain a master list of all unique ingredients across all recipes
+4. **Difficulty calculation**: Implemented a multi-condition algorithm to automatically calculate recipe difficulty:
+   - Easy: < 10 minutes AND < 4 ingredients
+   - Medium: < 10 minutes AND ≥ 4 ingredients
+   - Intermediate: ≥ 10 minutes AND < 4 ingredients
+   - Hard: ≥ 10 minutes AND ≥ 4 ingredients
+5. **Formatted recipe display**: Created organized output showing all recipes with their details and difficulty levels
+6. **Alphabetized ingredients list**: Displayed all unique ingredients in alphabetical order
+
+### Project Structure
+
+```
+.
+└── Exercise 1.3/
+    ├── Exercise_1.3.py                              # Main script for recipe management
+    ├── learning_journal.md                          # Learning journal
+    ├── 1. Activating venv and opening IPython.png   # Screenshot: Activating virtual environment and opening IPython
+    ├── 2. Entering new recipe.png                   # Screenshot: Entering a new recipe
+    └── 3. Entering 2 new recipes.png                # Screenshot: Entering 2 new recipes and viewing results
+```
+
+### Running the Script
+
+#### Run Exercise_1.3.py
+```bash
+# Make sure virtual environment is activated
+source venv/bin/activate
+
+# Run the script
+python "Exercise 1.3/Exercise_1.3.py"
+```
+
+The script will:
+1. Prompt you to enter how many recipes you'd like to add
+2. For each recipe, collect:
+   - Recipe name
+   - Cooking time (in minutes)
+   - Number of ingredients
+   - Each ingredient name
+3. Display all recipes with their details and calculated difficulty levels
+4. Display all unique ingredients in alphabetical order
+
+#### Run from IPython
+```bash
+# Activate virtual environment and launch IPython
+source venv/bin/activate
+ipython
+
+# In IPython, run:
+%run "Exercise 1.3/Exercise_1.3.py"
+```
+
+### Key Programming Concepts Demonstrated
+
+- **Functions**: Creating reusable code blocks with `def` and return values
+- **User Input**: Collecting and processing multiple inputs dynamically
+- **Nested Loops**: Iterating through recipes and their ingredients
+- **List Membership Testing**: Using `in` and `not in` operators to check for duplicates
+- **Conditional Logic**: Multi-branch if-elif statements for difficulty calculation
+- **List Operations**: Appending, sorting, and iterating through lists
+- **Data Processing**: Building and maintaining data structures incrementally
+
+### Notes
+
+- The script uses functions to organize code and improve reusability
+- Ingredients are automatically deduplicated when added to the master ingredients list
+- Difficulty is calculated dynamically based on recipe attributes, not stored
+- All ingredients are displayed in alphabetical order for better readability
+- This exercise demonstrates practical application of functions, loops, and conditional logic in a real-world scenario
