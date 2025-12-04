@@ -301,3 +301,88 @@ The script will:
 - The scripts can be run multiple times to add more recipes to existing files
 - Error handling provides user-friendly messages when files are missing or input is invalid
 - This exercise demonstrates real-world file persistence patterns used in many applications
+
+## Exercise 1.5: Recipe Management using Object-Oriented Programming
+
+### Overview
+This exercise refactors the recipe management system using Object-Oriented Programming (OOP) principles. Instead of using dictionaries and functions, recipes are now represented as objects of a `Recipe` class, demonstrating encapsulation, class variables, instance methods, and the benefits of OOP design.
+
+### What Was Accomplished
+
+1. **Created `Recipe` Class**: 
+   - Defined a class with data attributes: name, ingredients, cooking_time, and difficulty
+   - Implemented initialization method (`__init__`) to set up new recipe objects
+   - Created getter and setter methods for name and cooking_time following encapsulation principles
+
+2. **Implemented Class Methods**:
+   - `add_ingredients()`: Accepts variable-length arguments to add ingredients to a recipe
+   - `get_ingredients()`: Returns the list of ingredients
+   - `calculate_difficulty()`: Calculates recipe difficulty based on cooking time and ingredient count
+   - `get_difficulty()`: Returns difficulty, calculating it if not already done (lazy evaluation)
+   - `search_ingredient()`: Searches for a specific ingredient within a recipe
+   - `update_all_ingredients()`: Updates class variable to track all ingredients across all recipes
+   - `__str__()`: Provides formatted string representation of recipe objects
+
+3. **Class Variables**:
+   - Implemented `all_ingredients` as a class variable to track ingredients across all recipe instances
+   - Automatically updated when new ingredients are added to any recipe
+
+4. **Search Functionality**:
+   - Created `recipe_search()` function that searches through a list of Recipe objects
+   - Displays all recipes containing a specific ingredient
+
+### Project Structure
+
+```
+.
+└── Exercise 1.5/
+    ├── recipe_oop.py                                    # OOP-based recipe management script
+    ├── learning_journal.md                             # Learning journal
+    ├── Step 1 - Running script, rendering recipes.png  # Screenshot: Running script and displaying recipes
+    ├── Step 2 - Search results for Water.png          # Screenshot: Searching for Water ingredient
+    ├── Step 3 - Search results for Sugar in IPython.png # Screenshot: Searching for Sugar in IPython
+    ├── Step 4 - Search results for Bananas in IPython.png # Screenshot: Searching for Bananas in IPython
+    └── Step 5- Testing search in IPython.png          # Screenshot: Testing search functionality in IPython
+```
+
+### Running the Script
+
+#### Run recipe_oop.py
+```bash
+# Make sure virtual environment is activated
+source venv/bin/activate
+
+# Run the script
+python "Exercise 1.5/recipe_oop.py"
+```
+
+The script will:
+1. Create four recipe objects (Tea, Coffee, Cake, Banana Smoothie)
+2. Display each recipe with formatted output showing name, cooking time, difficulty, and ingredients
+3. Search for recipes containing "Water", "Sugar", and "Bananas"
+4. Display matching recipes for each search term
+
+#### Run from IPython
+```bash
+# Activate virtual environment and launch IPython
+source venv/bin/activate
+ipython
+
+# In IPython, run:
+%run "Exercise 1.5/recipe_oop.py"
+
+# Then you can interact with the objects:
+tea.get_name()
+tea.search_ingredient("Water")
+Recipe.all_ingredients  # View all ingredients across all recipes
+recipe_search(recipes_list, "Sugar")
+```
+
+### Notes
+
+- OOP provides a consistent way to model entities with both data and behavior
+- Class variables are useful for maintaining shared state across all instances
+- Encapsulation (getters/setters) provides control over attribute access
+- The `__str__()` method makes objects more user-friendly when printed
+- OOP promotes code reusability and maintainability
+- Class design should reflect the real-world entity being modeled
