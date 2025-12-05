@@ -386,3 +386,87 @@ recipe_search(recipes_list, "Sugar")
 - The `__str__()` method makes objects more user-friendly when printed
 - OOP promotes code reusability and maintainability
 - Class design should reflect the real-world entity being modeled
+
+## Exercise 1.6: Recipe Management with MySQL Database
+
+### Overview
+This exercise integrates MySQL database functionality into the recipe management system. Instead of storing data in files or memory, recipes are now stored in a MySQL database, demonstrating database connectivity, SQL operations, and CRUD (Create, Read, Update, Delete) functionality through a menu-driven interface.
+
+### What Was Accomplished
+
+1. **Database Setup**:
+   - Connected to MySQL server using `mysql.connector`
+   - Created `task_database` database
+   - Created `Recipes` table with columns: id, name, ingredients, cooking_time, difficulty
+   - Implemented proper connection and cursor management
+
+2. **CRUD Operations**:
+   - **Create**: `create_recipe()` function to add new recipes to the database
+   - **Read/Search**: `search_recipe()` function to find recipes by ingredient using LIKE queries
+   - **Update**: `update_recipe()` function to modify existing recipes with automatic difficulty recalculation
+   - **Delete**: `delete_recipe()` function to remove recipes from the database
+
+3. **Data Type Handling**:
+   - Converted Python lists to comma-separated strings for MySQL storage using `join()`
+   - Converted strings back to lists using `split()` when retrieving data
+   - Worked around MySQL's lack of native array support
+
+4. **Menu-Driven Interface**:
+   - Created `main_menu()` function with while loop for continuous operation
+   - Implemented user-friendly menu with four main options plus exit
+   - Integrated all CRUD operations into the menu system
+
+5. **Difficulty Calculation**:
+   - Implemented `calculate_difficulty()` function based on cooking time and ingredient count
+   - Automatic recalculation when cooking_time or ingredients are updated
+
+### Project Structure
+
+```
+.
+└── Exercise 1.6/
+    ├── recipe_mysql.py                                  # MySQL-based recipe management script
+    ├── learning_journal.md                             # Learning journal
+    ├── Part 1 - Script running, main menu displayed.png # Screenshot: Main menu
+    ├── Part 2 - Creating recipes.png                   # Screenshot: Creating recipes
+    ├── Part 3 - Searching for recipes by ingredient.png # Screenshot: Searching recipes
+    ├── Part 4 - Updating recipes.png                   # Screenshot: Updating recipes
+    ├── Part 5 - Deleting a recipe.png                  # Screenshot: Deleting recipe
+    └── Part 6 - Exiting program.png                    # Screenshot: Exiting program
+```
+
+### Running the Script
+
+#### Prerequisites
+- MySQL server must be running on your system
+- MySQL user credentials configured (default: `cf-python` user with password)
+- `mysql-connector-python` package installed in virtual environment
+
+#### Run recipe_mysql.py
+```bash
+# Make sure virtual environment is activated
+source venv/bin/activate
+
+# Ensure MySQL server is running
+# Then run the script
+python "Exercise 1.6/recipe_mysql.py"
+```
+
+The script will:
+1. Connect to MySQL server and create/access the database
+2. Display a main menu with four options:
+   - Create a new recipe
+   - Search for a recipe by ingredient
+   - Update an existing recipe
+   - Delete a recipe
+3. Allow you to perform database operations through the menu
+4. Exit when you type 'quit'
+
+### Notes
+
+- MySQL doesn't support array data types, so ingredients are stored as comma-separated strings
+- Parameterized queries (`%s` placeholders) are essential for security and preventing SQL injection
+- Always close database connections and cursors to free up resources
+- The `LIKE %pattern%` syntax allows searching for substrings within database fields
+- Automatic recalculation of difficulty maintains data consistency when related fields change
+- Menu-driven interfaces provide user-friendly access to database operations
