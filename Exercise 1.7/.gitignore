@@ -1,0 +1,11 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+README_ENV.md
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

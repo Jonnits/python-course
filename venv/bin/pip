@@ -1,4 +1,4 @@
-#!/Users/Jon/careerfoundry/python-course/venv/bin/python3
+#!/Users/Jon/careerfoundry/python-course/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
