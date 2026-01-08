@@ -63,7 +63,8 @@
         <h1>Welcome to Recipes!</h1>
         <p>Discover, create, and share your favorite recipes with this easy-to-use recipe management application.</p>
         <p>Get started by exploring the collection of delicious recipes or create your own!</p>
-        <a href="/admin/" class="button">Go to Admin Panel</a>
+        <a href="{% url 'recipes:recipes_list' %}" class="button">Browse Recipes</a>
+        <a href="/admin/" class="button" style="margin-left: 15px;">Admin Panel</a>
     </div>
 </body>
 </html>
