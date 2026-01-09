@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Recipe Application</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0cfad;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            font-family: "Bebas Neue", sans-serif;
+            font-weight: 400;
+            font-size: 3em;
+            color: #d47611;
+            margin: 0 0 30px 0;
+            text-align: center;
+        }
+        .error-message {
+            color: #d32f2f;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        form p {
+            margin-bottom: 20px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: bold;
+        }
+        form input[type="text"],
+        form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #f0cfad;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        form input[type="text"]:focus,
+        form input[type="password"]:focus {
+            outline: none;
+            border-color: #d47611;
+        }
+        button {
+            font-family: "Bebas Neue", sans-serif;
+            font-weight: 400;
+            font-size: 1.5em;
+            padding: 12px 30px;
+            background: #f0cfad;
+            color: #d47611;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #d47611;
+            color: white;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-link a {
+            color: #d47611;
+            text-decoration: none;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        
+        {% if error_message %}
+            <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+        
+        <form action="" method="POST">
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit">Login</button>
+        </form>
+        
+        <div class="back-link">
+            <a href="{% url 'recipes:recipes_home' %}">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>
+

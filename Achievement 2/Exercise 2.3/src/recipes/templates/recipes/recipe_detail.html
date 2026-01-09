@@ -104,7 +104,12 @@
 </head>
 <body>
     <div class="container">
-        <a href="{% url 'recipes:recipes_list' %}" class="back-button">← Back to Recipes</a>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <a href="{% url 'recipes:recipes_list' %}" class="back-button">← Back to Recipes</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="back-button">Logout</a>
+            {% endif %}
+        </div>
         
         <div class="recipe-detail">
             {% if recipe.pic %}

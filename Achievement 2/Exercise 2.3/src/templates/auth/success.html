@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Application - Welcome</title>
+    <title>Logout Successful - Recipe Application</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -29,22 +29,25 @@
         h1 {
             font-family: "Bebas Neue", sans-serif;
             font-weight: 400;
-            font-style: normal;
             font-size: 4em;
             color: #d47611;
+            margin: 0 0 20px 0;
+        }
+        .success-icon {
+            font-size: 80px;
             margin-bottom: 20px;
         }
         p {
             color: #666;
             line-height: 1.6;
             font-size: 18px;
+            margin-bottom: 30px;
         }
         .button {
             font-family: "Bebas Neue", sans-serif;
             font-weight: 400;
-            font-style: normal;
             display: inline-block;
-            margin-top: 20px;
+            margin: 10px;
             padding: 12px 30px;
             background: #f0cfad;
             color: #d47611;
@@ -56,20 +59,44 @@
             background: #d47611;
             color: white;
         }
+        .info-box {
+            background: #f0cfad;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        .info-box h2 {
+            font-family: "Bebas Neue", sans-serif;
+            font-weight: 400;
+            font-size: 2em;
+            color: #d47611;
+            margin: 0 0 15px 0;
+        }
+        .info-box ul {
+            color: #666;
+            line-height: 1.8;
+            margin: 0;
+            padding-left: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to Recipes!</h1>
-        <p>Discover, create, and share your favorite recipes with this easy-to-use recipe management application.</p>
-        <p>Get started by exploring the collection of delicious recipes or create your own!</p>
-        <a href="{% url 'recipes:recipes_list' %}" class="button">Browse Recipes</a>
-        {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}" class="button" style="margin-left: 15px;">Logout</a>
-        {% else %}
-            <a href="{% url 'login' %}" class="button" style="margin-left: 15px;">Login</a>
-        {% endif %}
-        <a href="/admin/" class="button" style="margin-left: 15px;">Admin Panel</a>
+        <h1>You are now logged out</h1>
+        <p>Thank you for using Recipes, see you again soon!</p>
+        
+        <a href="{% url 'login' %}" class="button">Log Back In</a>
+        <a href="{% url 'recipes:recipes_home' %}" class="button">Return to Home</a>
+        
+        <div class="info-box">
+            <h2>What's Next?</h2>
+            <ul>
+                <li>Browse our collection of recipes (no login required)</li>
+                <li>Log in to view detailed recipe information</li>
+            </ul>
+        </div>
     </div>
 </body>
 </html>
+
