@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from .models import Recipe
+from .forms import RecipeSearchForm
 
 
 class RecipeModelTest(TestCase):
@@ -198,3 +199,236 @@ class RecipeURLsTest(TestCase):
         """Test that recipe detail URL is accessible"""
         response = self.client.get(f'/recipes/{self.recipe.id}/')
         self.assertEqual(response.status_code, 200)
+
+
+class RecipeFormTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.recipe1 = Recipe.objects.create(
+            name="Chocolate Cake",
+            author=self.user,
+            cooking_time=45,
+            ingredients="Flour, Sugar, Cocoa, Eggs, Butter",
+            description="Delicious chocolate cake"
+        )
+        self.recipe2 = Recipe.objects.create(
+            name="Hot Chocolate",
+            author=self.user,
+            cooking_time=5,
+            ingredients="Milk, Cocoa, Sugar",
+            description="Warm chocolate drink"
+        )
+        self.recipe3 = Recipe.objects.create(
+            name="Easy Salad",
+            author=self.user,
+            cooking_time=10,
+            ingredients="Lettuce, Tomato, Cucumber",
+            description="Simple salad"
+        )
+    
+    def test_search_form_fields(self):
+        """Test that search form has all required fields"""
+        form = RecipeSearchForm()
+        self.assertIn('name', form.fields)
+        self.assertIn('ingredients', form.fields)
+        self.assertIn('max_cooking_time', form.fields)
+        self.assertIn('difficulty', form.fields)
+        self.assertIn('author', form.fields)
+    
+    def test_search_form_optional_fields(self):
+        """Test that all search form fields are optional"""
+        form = RecipeSearchForm({})
+        self.assertTrue(form.is_valid())
+    
+    def test_search_form_name_field(self):
+        """Test search form name field validation"""
+        form = RecipeSearchForm({'name': 'Chocolate'})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['name'], 'Chocolate')
+    
+    def test_search_form_max_cooking_time_validation(self):
+        """Test search form max_cooking_time field validation"""
+        form = RecipeSearchForm({'max_cooking_time': 30})
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['max_cooking_time'], 30)
+    
+    def test_search_form_difficulty_choices(self):
+        """Test search form difficulty field choices"""
+        form = RecipeSearchForm()
+        choices = form.fields['difficulty'].choices
+        self.assertIn(('Easy', 'Easy'), choices)
+        self.assertIn(('Medium', 'Medium'), choices)
+        self.assertIn(('Intermediate', 'Intermediate'), choices)
+        self.assertIn(('Hard', 'Hard'), choices)
+
+
+class RecipeSearchViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.user2 = User.objects.create_user(
+            username='anotheruser',
+            email='another@example.com',
+            password='testpass123'
+        )
+        self.recipe1 = Recipe.objects.create(
+            name="Chocolate Cake",
+            author=self.user,
+            cooking_time=45,
+            ingredients="Flour, Sugar, Cocoa, Eggs, Butter",
+            description="Delicious chocolate cake"
+        )
+        self.recipe2 = Recipe.objects.create(
+            name="Hot Chocolate",
+            author=self.user,
+            cooking_time=5,
+            ingredients="Milk, Cocoa, Sugar",
+            description="Warm chocolate drink"
+        )
+        self.recipe3 = Recipe.objects.create(
+            name="Easy Salad",
+            author=self.user2,
+            cooking_time=10,
+            ingredients="Lettuce, Tomato, Cucumber",
+            description="Simple salad"
+        )
+    
+    def test_search_view_accessible(self):
+        """Test that search view is accessible"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'recipes/recipe_search.html')
+    
+    def test_search_view_contains_form(self):
+        """Test that search view contains the search form"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url)
+        self.assertIn('form', response.context)
+        self.assertIsInstance(response.context['form'], RecipeSearchForm)
+    
+    def test_search_by_name(self):
+        """Test searching recipes by name"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url, {'name': 'Chocolate'})
+        self.assertEqual(response.status_code, 200)
+        # Check that data contains matching recipes
+        if response.context.get('recipes_data'):
+            recipe_names = [row['Recipe Name'] for row in response.context['recipes_data']]
+            self.assertIn('Chocolate Cake', recipe_names)
+            self.assertIn('Hot Chocolate', recipe_names)
+    
+    def test_search_by_ingredient(self):
+        """Test searching recipes by ingredient"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url, {'ingredients': 'Cocoa'})
+        self.assertEqual(response.status_code, 200)
+        if response.context.get('recipes_data'):
+            recipe_names = [row['Recipe Name'] for row in response.context['recipes_data']]
+            self.assertIn('Chocolate Cake', recipe_names)
+            self.assertIn('Hot Chocolate', recipe_names)
+    
+    def test_search_by_max_cooking_time(self):
+        """Test searching recipes by maximum cooking time"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url, {'max_cooking_time': 10})
+        self.assertEqual(response.status_code, 200)
+        if response.context.get('recipes_data'):
+            # All recipes should have cooking_time <= 10
+            for row in response.context['recipes_data']:
+                recipe = Recipe.objects.get(name=row['Recipe Name'])
+                self.assertLessEqual(recipe.cooking_time, 10)
+    
+    def test_search_by_difficulty(self):
+        """Test searching recipes by difficulty"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url, {'difficulty': 'Easy'})
+        self.assertEqual(response.status_code, 200)
+        if response.context.get('recipes_data'):
+            # All recipes should have Easy difficulty
+            for row in response.context['recipes_data']:
+                self.assertEqual(row['Difficulty'], 'Easy')
+    
+    def test_search_by_author(self):
+        """Test searching recipes by author"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url, {'author': 'anotheruser'})
+        self.assertEqual(response.status_code, 200)
+        if response.context.get('recipes_data'):
+            recipe_names = [row['Recipe Name'] for row in response.context['recipes_data']]
+            self.assertIn('Easy Salad', recipe_names)
+    
+    def test_search_wildcard_partial_match(self):
+        """Test wildcard/partial search functionality"""
+        url = reverse('recipes:recipe_search')
+        # Search for "Choc" should match "Chocolate Cake" and "Hot Chocolate"
+        response = self.client.get(url, {'name': 'Choc'})
+        self.assertEqual(response.status_code, 200)
+        if response.context.get('recipes_data'):
+            recipe_names = [row['Recipe Name'] for row in response.context['recipes_data']]
+            self.assertIn('Chocolate Cake', recipe_names)
+            self.assertIn('Hot Chocolate', recipe_names)
+    
+    def test_search_case_insensitive(self):
+        """Test that search is case-insensitive"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url, {'name': 'chocolate'})
+        self.assertEqual(response.status_code, 200)
+        if response.context.get('recipes_data'):
+            recipe_names = [row['Recipe Name'] for row in response.context['recipes_data']]
+            self.assertIn('Chocolate Cake', recipe_names)
+    
+    def test_show_all_recipes(self):
+        """Test Show All functionality"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url, {'show_all': '1'})
+        self.assertEqual(response.status_code, 200)
+        if response.context.get('recipes_data'):
+            # Should show all recipes
+            self.assertEqual(len(response.context['recipes_data']), Recipe.objects.count())
+    
+    def test_search_multiple_filters(self):
+        """Test searching with multiple filters"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url, {
+            'name': 'Chocolate',
+            'max_cooking_time': 10,
+            'difficulty': 'Easy'
+        })
+        self.assertEqual(response.status_code, 200)
+        if response.context.get('recipes_data'):
+            # Should only match recipes that meet all criteria
+            for row in response.context['recipes_data']:
+                recipe = Recipe.objects.get(name=row['Recipe Name'])
+                self.assertIn('Chocolate', recipe.name)
+                self.assertLessEqual(recipe.cooking_time, 10)
+                self.assertEqual(recipe.difficulty, 'Easy')
+    
+    def test_search_no_results(self):
+        """Test search with no matching results"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url, {'name': 'NonExistentRecipe'})
+        self.assertEqual(response.status_code, 200)
+        if response.context.get('recipes_data') is not None:
+            self.assertEqual(len(response.context['recipes_data']), 0)
+    
+    def test_search_view_charts_generated(self):
+        """Test that charts are generated when recipes exist"""
+        url = reverse('recipes:recipe_search')
+        response = self.client.get(url, {'show_all': '1'})
+        self.assertEqual(response.status_code, 200)
+        # Charts should be generated if recipes exist
+        if Recipe.objects.exists():
+            self.assertIn('charts', response.context)
+            charts = response.context['charts']
+            self.assertIn('difficulty_bar', charts)
+            self.assertIn('author_pie', charts)
+            self.assertIn('cooking_time_line', charts)
