@@ -1,11 +1,20 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
+from .forms import UserRegistrationForm
+from users.models import UserProfile
 
 def login_view(request):
     """
     View function for user login.
     """
+    # Check if user is already logged in
+    if request.user.is_authenticated:
+        messages.info(request, 'You are already logged in.')
+        return redirect('recipes:recipes_list')
+    
     error_message = None
     form = AuthenticationForm()
     
@@ -48,4 +57,43 @@ def logout_success(request):
     View function to display logout success page.
     """
     return render(request, 'auth/success.html')
+
+def register_view(request):
+    """
+    View function for user registration.
+    """
+    error_message = None
+    form = UserRegistrationForm()
+    
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        
+        if form.is_valid():
+            user = form.save()
+            # Automatically log in the user after registration
+            login(request, user)
+            return redirect('recipes:recipes_list')
+        else:
+            error_message = 'Please correct the errors below.'
+    
+    context = {
+        'form': form,
+        'error_message': error_message
+    }
+    return render(request, 'auth/register.html', context)
+
+@login_required
+def delete_profile(request):
+    """
+    Delete user profile with confirmation.
+    """
+    if request.method == 'POST':
+        # User confirmed deletion
+        user = request.user
+        user.delete()  # This will cascade delete UserProfile
+        messages.success(request, 'Your profile has been deleted.')
+        return redirect('recipes:recipes_home')
+    
+    # Show confirmation page
+    return render(request, 'auth/delete_profile_confirm.html')
 

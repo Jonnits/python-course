@@ -1,8 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Avg, Count
+from django.contrib import messages
 from .models import Recipe
-from .forms import RecipeSearchForm
+from .forms import RecipeSearchForm, RecipeForm
+from users.models import UserProfile
 import pandas as pd
 import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend
@@ -30,7 +32,59 @@ def recipe_detail(request, recipe_id):
     Protected view - requires user to be logged in.
     """
     recipe = get_object_or_404(Recipe, id=recipe_id)
-    return render(request, 'recipes/recipe_detail.html', {'recipe': recipe})
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    is_favorited = recipe in user_profile.favorited_recipes.all()
+    return render(request, 'recipes/recipe_detail.html', {
+        'recipe': recipe,
+        'is_favorited': is_favorited
+    })
+
+@login_required
+def toggle_favorite(request, recipe_id):
+    """
+    Toggle favorite status for a recipe.
+    """
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    
+    if recipe in user_profile.favorited_recipes.all():
+        user_profile.favorited_recipes.remove(recipe)
+        messages.success(request, f'Removed {recipe.name} from favorites.')
+    else:
+        user_profile.favorited_recipes.add(recipe)
+        messages.success(request, f'Added {recipe.name} to favorites.')
+    
+    return redirect('recipes:recipe_detail', recipe_id=recipe_id)
+
+@login_required
+def user_favorites(request):
+    """
+    Display user's favorite recipes.
+    """
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    favorites = user_profile.favorited_recipes.all().order_by('name')
+    return render(request, 'recipes/user_favorites.html', {
+        'favorites': favorites,
+        'user_profile': user_profile
+    })
+
+@login_required
+def add_recipe(request):
+    """
+    View function for adding a new recipe.
+    """
+    if request.method == 'POST':
+        form = RecipeForm(request.POST, request.FILES)
+        if form.is_valid():
+            recipe = form.save(commit=False)
+            recipe.author = request.user
+            recipe.save()
+            messages.success(request, f'Recipe "{recipe.name}" has been added successfully!')
+            return redirect('recipes:recipe_detail', recipe_id=recipe.id)
+    else:
+        form = RecipeForm()
+    
+    return render(request, 'recipes/add_recipe.html', {'form': form})
 
 def recipe_search(request):
     """

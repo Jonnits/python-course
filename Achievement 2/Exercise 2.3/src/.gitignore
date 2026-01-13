@@ -1,7 +1,7 @@
 # Text backup files
-*.bak 
+*.bak
 
-#Database
+# Database
 *.sqlite3
 
 # Python
@@ -16,6 +16,9 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+
+# Static files (collected for production)
+staticfiles/
 
 # Virtual Environment
 ../a2-ve-recipeapp/
@@ -33,3 +36,6 @@ Thumbs.db
 
 # Environment
 .env
+
+# Media files (user uploads)
+media/

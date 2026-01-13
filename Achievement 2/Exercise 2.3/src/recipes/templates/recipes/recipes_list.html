@@ -6,7 +6,7 @@
     <title>Recipe Application - All Recipes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,24 +14,76 @@
             padding: 0;
             background: #f0cfad;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 30px;
         }
         .header {
             background: white;
             padding: 20px 40px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 30px;
+            position: relative;
+        }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
         .header h1 {
-            font-family: "Bebas Neue", sans-serif;
-            font-weight: 400;
-            font-size: 3em;
+            font-family: "Lora", serif;
+            font-weight: 600;
+            font-size: 1.8em;
             color: #d47611;
             margin: 0;
+        }
+        .header-logout {
+            font-family: "Lora", serif;
+            font-weight: 500;
+            padding: 8px 20px;
+            background: #f0cfad;
+            color: #d47611;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .header-logout:hover {
+            background: #d47611;
+            color: white;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            flex: 1;
+        }
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-button {
+            font-family: "Lora", serif;
+            font-weight: 500;
+            display: inline-block;
+            padding: 10px 25px;
+            background: #f0cfad;
+            color: #d47611;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .search-button:hover {
+            background: #d47611;
+            color: white;
         }
         .recipes-grid {
             display: grid;
@@ -56,7 +108,7 @@
         }
         .recipe-image {
             width: 100%;
-            height: 200px;
+            height: 140px;
             object-fit: cover;
             display: block;
         }
@@ -64,9 +116,9 @@
             padding: 25px;
         }
         .recipe-card h2 {
-            font-family: "Bebas Neue", sans-serif;
-            font-weight: 400;
-            font-size: 2em;
+            font-family: "Lora", serif;
+            font-weight: 600;
+            font-size: 1.2em;
             color: #d47611;
             margin: 0 0 15px 0;
         }
@@ -78,7 +130,8 @@
             color: #666;
         }
         .difficulty {
-            font-family: "Bebas Neue", sans-serif;
+            font-family: "Lora", serif;
+            font-weight: 500;
             font-size: 1.2em;
             padding: 5px 15px;
             border-radius: 20px;
@@ -95,8 +148,8 @@
             overflow: hidden;
         }
         .back-button {
-            font-family: "Bebas Neue", sans-serif;
-            font-weight: 400;
+            font-family: "Lora", serif;
+            font-weight: 500;
             display: inline-block;
             margin-bottom: 20px;
             padding: 10px 25px;
@@ -121,23 +174,57 @@
             color: #666;
             font-size: 18px;
         }
+        footer {
+            background: #d47611;
+            padding: 10px 40px;
+            text-align: center;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+        footer p {
+            margin: 0;
+            color: white;
+            font-size: 14px;
+        }
+        footer a {
+            color: white;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="container">
+        <div class="header-content">
             <h1>All Recipes</h1>
+            {% if user.is_authenticated %}
+                <div class="header-buttons">
+                    <a href="{% url 'recipes:user_favorites' %}" class="header-logout">Favorites</a>
+                    <a href="{% url 'logout' %}" class="header-logout">Logout</a>
+                </div>
+            {% endif %}
         </div>
     </div>
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div>
-                <a href="{% url 'recipes:recipes_home' %}" class="back-button">← Back to Home</a>
-                <a href="{% url 'recipes:recipe_search' %}" class="back-button" style="margin-left: 10px;">Search Recipes</a>
+        {% if messages %}
+            <div style="margin-bottom: 20px;">
+                {% for message in messages %}
+                    <div style="background: #d1ecf1; color: #0c5460; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #bee5eb;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
             </div>
-            {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}" class="back-button">Logout</a>
-            {% endif %}
+        {% endif %}
+        
+        <div class="top-section">
+            <a href="{% url 'recipes:recipes_home' %}" class="back-button">← Back to Home</a>
+            <div style="display: flex; gap: 10px;">
+                <a href="{% url 'recipes:recipe_search' %}" class="search-button">Search Recipes</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'recipes:add_recipe' %}" class="search-button">Add Recipe</a>
+                {% endif %}
+            </div>
         </div>
         
         {% if recipes %}
@@ -166,6 +253,10 @@
             </div>
         {% endif %}
     </div>
+    <footer>
+        <p>
+            <a href="https://www.jonrubra.com/index.html">A Jon Rubra app</a>
+        </p>
+    </footer>
 </body>
 </html>
-

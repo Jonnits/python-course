@@ -25,9 +25,10 @@ class Recipe(models.Model):
             return "Hard"
     
     def get_ingredients_list(self):
-        """Return ingredients as a list"""
+        """Return ingredients as a sorted list"""
         if self.ingredients:
-            return [ingredient.strip() for ingredient in self.ingredients.split(',')]
+            ingredients = [ingredient.strip() for ingredient in self.ingredients.split(',')]
+            return sorted(ingredients)
         return []
     
     def save(self, *args, **kwargs):

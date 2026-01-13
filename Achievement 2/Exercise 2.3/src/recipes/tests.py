@@ -1,8 +1,10 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from .models import Recipe
-from .forms import RecipeSearchForm
+from .forms import RecipeSearchForm, RecipeForm
+from users.models import UserProfile
 
 
 class RecipeModelTest(TestCase):
@@ -98,6 +100,19 @@ class RecipeModelTest(TestCase):
         )
         ingredients = recipe.get_ingredients_list()
         self.assertEqual(ingredients, [])
+    
+    def test_get_ingredients_list_sorted(self):
+        """Test that get_ingredients_list returns sorted ingredients"""
+        recipe = Recipe.objects.create(
+            name="Sorted Recipe",
+            author=self.user,
+            cooking_time=10,
+            ingredients="Zucchini, Apple, Banana, Carrot",
+            description="Test sorting"
+        )
+        ingredients = recipe.get_ingredients_list()
+        # Should be sorted alphabetically
+        self.assertEqual(ingredients, ['Apple', 'Banana', 'Carrot', 'Zucchini'])
 
 
 class RecipeViewsTest(TestCase):
@@ -139,8 +154,15 @@ class RecipeViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['recipes']), 0)
     
+    def test_recipe_detail_view_requires_login(self):
+        """Test that recipe detail view requires authentication"""
+        url = reverse('recipes:recipe_detail', args=[self.recipe.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)  # Redirects to login
+    
     def test_recipe_detail_view(self):
         """Test that recipe detail page loads successfully"""
+        self.client.login(username='testuser', password='testpass123')
         url = reverse('recipes:recipe_detail', args=[self.recipe.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -149,6 +171,7 @@ class RecipeViewsTest(TestCase):
     
     def test_recipe_detail_view_404(self):
         """Test that recipe detail returns 404 for non-existent recipe"""
+        self.client.login(username='testuser', password='testpass123')
         url = reverse('recipes:recipe_detail', args=[99999])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
@@ -197,6 +220,7 @@ class RecipeURLsTest(TestCase):
     
     def test_recipe_detail_url_accessible(self):
         """Test that recipe detail URL is accessible"""
+        self.client.login(username='testuser', password='testpass123')
         response = self.client.get(f'/recipes/{self.recipe.id}/')
         self.assertEqual(response.status_code, 200)
 
@@ -432,3 +456,393 @@ class RecipeSearchViewTest(TestCase):
             self.assertIn('difficulty_bar', charts)
             self.assertIn('author_pie', charts)
             self.assertIn('cooking_time_line', charts)
+
+
+class RecipeFormTest(TestCase):
+    """Test the RecipeForm for adding recipes"""
+    
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        UserProfile.objects.create(
+            user=self.user,
+            name='testuser',
+            email_address='test@example.com'
+        )
+    
+    def test_recipe_form_fields(self):
+        """Test that RecipeForm has all required fields"""
+        form = RecipeForm()
+        self.assertIn('name', form.fields)
+        self.assertIn('cooking_time', form.fields)
+        self.assertIn('ingredients', form.fields)
+        self.assertIn('description', form.fields)
+        self.assertIn('pic', form.fields)
+    
+    def test_recipe_form_valid_data(self):
+        """Test RecipeForm with valid data"""
+        form_data = {
+            'name': 'Test Recipe',
+            'cooking_time': 30,
+            'ingredients': 'Salt, Pepper, Water',
+            'description': 'A test recipe'
+        }
+        form = RecipeForm(data=form_data)
+        self.assertTrue(form.is_valid())
+    
+    def test_recipe_form_missing_required_fields(self):
+        """Test RecipeForm validation with missing required fields"""
+        form = RecipeForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertIn('name', form.errors)
+        self.assertIn('cooking_time', form.errors)
+        self.assertIn('ingredients', form.errors)
+        self.assertIn('description', form.errors)
+    
+    def test_recipe_form_pic_optional(self):
+        """Test that pic field is optional"""
+        form_data = {
+            'name': 'Test Recipe',
+            'cooking_time': 30,
+            'ingredients': 'Salt, Pepper, Water',
+            'description': 'A test recipe'
+        }
+        form = RecipeForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+
+class AddRecipeViewTest(TestCase):
+    """Test the add_recipe view"""
+    
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        UserProfile.objects.create(
+            user=self.user,
+            name='testuser',
+            email_address='test@example.com'
+        )
+    
+    def test_add_recipe_view_requires_login(self):
+        """Test that add_recipe view requires authentication"""
+        url = reverse('recipes:add_recipe')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)  # Redirects to login
+    
+    def test_add_recipe_view_get(self):
+        """Test GET request to add_recipe view"""
+        self.client.login(username='testuser', password='testpass123')
+        url = reverse('recipes:add_recipe')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'recipes/add_recipe.html')
+        self.assertIn('form', response.context)
+        self.assertIsInstance(response.context['form'], RecipeForm)
+    
+    def test_add_recipe_view_post_valid(self):
+        """Test POST request with valid recipe data"""
+        self.client.login(username='testuser', password='testpass123')
+        url = reverse('recipes:add_recipe')
+        form_data = {
+            'name': 'New Recipe',
+            'cooking_time': 25,
+            'ingredients': 'Flour, Sugar, Eggs',
+            'description': 'A delicious new recipe'
+        }
+        response = self.client.post(url, form_data)
+        # Should redirect to recipe detail page
+        self.assertEqual(response.status_code, 302)
+        
+        # Check that recipe was created
+        recipe = Recipe.objects.get(name='New Recipe')
+        self.assertEqual(recipe.author, self.user)
+        self.assertEqual(recipe.cooking_time, 25)
+        self.assertEqual(recipe.difficulty, 'Intermediate')  # 25 min (>=10), 3 ingredients (<4) = Intermediate
+    
+    def test_add_recipe_view_post_invalid(self):
+        """Test POST request with invalid recipe data"""
+        self.client.login(username='testuser', password='testpass123')
+        url = reverse('recipes:add_recipe')
+        form_data = {
+            'name': '',  # Missing required field
+            'cooking_time': 25,
+        }
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 200)  # Stays on form page
+        self.assertFormError(response, 'form', 'name', 'This field is required.')
+
+
+class FavoriteFunctionalityTest(TestCase):
+    """Test favorite/unfavorite functionality"""
+    
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.user_profile = UserProfile.objects.create(
+            user=self.user,
+            name='testuser',
+            email_address='test@example.com'
+        )
+        self.recipe = Recipe.objects.create(
+            name="Test Recipe",
+            author=self.user,
+            cooking_time=30,
+            ingredients="Salt, Pepper, Water",
+            description="A test recipe"
+        )
+    
+    def test_toggle_favorite_requires_login(self):
+        """Test that toggle_favorite requires authentication"""
+        url = reverse('recipes:toggle_favorite', args=[self.recipe.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)  # Redirects to login
+    
+    def test_add_to_favorites(self):
+        """Test adding a recipe to favorites"""
+        self.client.login(username='testuser', password='testpass123')
+        url = reverse('recipes:toggle_favorite', args=[self.recipe.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)  # Redirects to recipe detail
+        
+        # Check that recipe is in favorites
+        self.user_profile.refresh_from_db()
+        self.assertIn(self.recipe, self.user_profile.favorited_recipes.all())
+    
+    def test_remove_from_favorites(self):
+        """Test removing a recipe from favorites"""
+        self.client.login(username='testuser', password='testpass123')
+        # First add to favorites
+        self.user_profile.favorited_recipes.add(self.recipe)
+        
+        # Then remove
+        url = reverse('recipes:toggle_favorite', args=[self.recipe.id])
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)
+        
+        # Check that recipe is no longer in favorites
+        self.user_profile.refresh_from_db()
+        self.assertNotIn(self.recipe, self.user_profile.favorited_recipes.all())
+    
+    def test_user_favorites_view_requires_login(self):
+        """Test that user_favorites view requires authentication"""
+        url = reverse('recipes:user_favorites')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)  # Redirects to login
+    
+    def test_user_favorites_view(self):
+        """Test user_favorites view displays user's favorites"""
+        self.client.login(username='testuser', password='testpass123')
+        # Add recipe to favorites
+        self.user_profile.favorited_recipes.add(self.recipe)
+        
+        url = reverse('recipes:user_favorites')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'recipes/user_favorites.html')
+        self.assertIn('favorites', response.context)
+        self.assertIn(self.recipe, response.context['favorites'])
+    
+    def test_user_favorites_view_empty(self):
+        """Test user_favorites view with no favorites"""
+        self.client.login(username='testuser', password='testpass123')
+        url = reverse('recipes:user_favorites')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['favorites']), 0)
+    
+    def test_recipe_detail_shows_favorite_status(self):
+        """Test that recipe detail view shows favorite status"""
+        self.client.login(username='testuser', password='testpass123')
+        # Add recipe to favorites
+        self.user_profile.favorited_recipes.add(self.recipe)
+        
+        url = reverse('recipes:recipe_detail', args=[self.recipe.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('is_favorited', response.context)
+        self.assertTrue(response.context['is_favorited'])
+
+
+class UserRegistrationFormTest(TestCase):
+    """Test the UserRegistrationForm"""
+    
+    def setUp(self):
+        self.existing_user = User.objects.create_user(
+            username='existinguser',
+            email='existing@example.com',
+            password='testpass123'
+        )
+    
+    def test_registration_form_fields(self):
+        """Test that registration form has all required fields"""
+        from recipe_project.forms import UserRegistrationForm
+        form = UserRegistrationForm()
+        self.assertIn('username', form.fields)
+        self.assertIn('email', form.fields)
+        self.assertIn('password1', form.fields)
+        self.assertIn('password2', form.fields)
+    
+    def test_registration_form_valid_data(self):
+        """Test registration form with valid data"""
+        from recipe_project.forms import UserRegistrationForm
+        form_data = {
+            'username': 'newuser',
+            'email': 'newuser@example.com',
+            'password1': 'Password123',
+            'password2': 'Password123'
+        }
+        form = UserRegistrationForm(data=form_data)
+        self.assertTrue(form.is_valid())
+    
+    def test_registration_form_duplicate_username(self):
+        """Test registration form with duplicate username"""
+        from recipe_project.forms import UserRegistrationForm
+        form_data = {
+            'username': 'existinguser',
+            'email': 'new@example.com',
+            'password1': 'Password123',
+            'password2': 'Password123'
+        }
+        form = UserRegistrationForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('username', form.errors)
+    
+    def test_registration_form_password_too_short(self):
+        """Test registration form with password too short"""
+        from recipe_project.forms import UserRegistrationForm
+        form_data = {
+            'username': 'newuser',
+            'email': 'newuser@example.com',
+            'password1': 'Pass1',  # Too short
+            'password2': 'Pass1'
+        }
+        form = UserRegistrationForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('password1', form.errors)
+    
+    def test_registration_form_password_too_long(self):
+        """Test registration form with password too long"""
+        from recipe_project.forms import UserRegistrationForm
+        form_data = {
+            'username': 'newuser',
+            'email': 'newuser@example.com',
+            'password1': 'Password123456789',  # Too long (17 chars)
+            'password2': 'Password123456789'
+        }
+        form = UserRegistrationForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('password1', form.errors)
+    
+    def test_registration_form_password_no_number(self):
+        """Test registration form with password missing number"""
+        from recipe_project.forms import UserRegistrationForm
+        form_data = {
+            'username': 'newuser',
+            'email': 'newuser@example.com',
+            'password1': 'Password',  # No number
+            'password2': 'Password'
+        }
+        form = UserRegistrationForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('password1', form.errors)
+    
+    def test_registration_form_password_no_uppercase(self):
+        """Test registration form with password missing uppercase"""
+        from recipe_project.forms import UserRegistrationForm
+        form_data = {
+            'username': 'newuser',
+            'email': 'newuser@example.com',
+            'password1': 'password123',  # No uppercase
+            'password2': 'password123'
+        }
+        form = UserRegistrationForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('password1', form.errors)
+    
+    def test_registration_form_password_mismatch(self):
+        """Test registration form with mismatched passwords"""
+        from recipe_project.forms import UserRegistrationForm
+        form_data = {
+            'username': 'newuser',
+            'email': 'newuser@example.com',
+            'password1': 'Password123',
+            'password2': 'Password456'  # Different password
+        }
+        form = UserRegistrationForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('__all__', form.errors)
+    
+    def test_registration_form_save(self):
+        """Test that registration form creates user and profile"""
+        from recipe_project.forms import UserRegistrationForm
+        form_data = {
+            'username': 'newuser',
+            'email': 'newuser@example.com',
+            'password1': 'Password123',
+            'password2': 'Password123'
+        }
+        form = UserRegistrationForm(data=form_data)
+        self.assertTrue(form.is_valid())
+        
+        user = form.save()
+        self.assertEqual(user.username, 'newuser')
+        self.assertEqual(user.email, 'newuser@example.com')
+        self.assertTrue(user.check_password('Password123'))
+        
+        # Check that UserProfile was created
+        profile = UserProfile.objects.get(user=user)
+        self.assertEqual(profile.name, 'newuser')
+        self.assertEqual(profile.email_address, 'newuser@example.com')
+
+
+class DeleteProfileTest(TestCase):
+    """Test delete profile functionality"""
+    
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.user_profile = UserProfile.objects.create(
+            user=self.user,
+            name='testuser',
+            email_address='test@example.com'
+        )
+    
+    def test_delete_profile_requires_login(self):
+        """Test that delete_profile view requires authentication"""
+        url = reverse('delete_profile')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)  # Redirects to login
+    
+    def test_delete_profile_confirmation_page(self):
+        """Test delete profile confirmation page"""
+        self.client.login(username='testuser', password='testpass123')
+        url = reverse('delete_profile')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'auth/delete_profile_confirm.html')
+    
+    def test_delete_profile_post(self):
+        """Test deleting profile via POST request"""
+        self.client.login(username='testuser', password='testpass123')
+        url = reverse('delete_profile')
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 302)  # Redirects to home
+        
+        # Check that user and profile are deleted
+        self.assertFalse(User.objects.filter(username='testuser').exists())
+        self.assertFalse(UserProfile.objects.filter(user__username='testuser').exists())
