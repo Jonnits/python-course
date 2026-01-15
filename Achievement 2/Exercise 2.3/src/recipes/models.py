@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from cloudinary.models import CloudinaryField
 
 class Recipe(models.Model):
     name = models.CharField(max_length=120)
@@ -8,7 +9,7 @@ class Recipe(models.Model):
     ingredients = models.TextField()
     description = models.TextField()
     difficulty = models.CharField(max_length=20, blank=True)
-    pic = models.ImageField(upload_to='recipe_pics/', blank=True, null=True)
+    pic = CloudinaryField('image', folder='recipe_pics/', blank=True, null=True)
     
     def calculate_difficulty(self):
         """Calculate recipe difficulty based on cooking time and number of ingredients"""

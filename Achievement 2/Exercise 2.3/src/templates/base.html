@@ -7,14 +7,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     {% block content %}{% endblock %}
     
     <footer style="background: white; padding: 20px 40px; margin-top: 40px; text-align: center; border-top: 1px solid #f0cfad;">
-        <p style="margin: 5px 0; color: #666; font-size: 14px;">
-            <a href="https://www.jonrubra.com/index.html" style="color: #d47611; text-decoration: none;">A Jon Rubra app</a>
+        <p style="margin: 5px 0; color: #666; font-size: 14px; font-family: 'Lora', serif !important;">
+            <a href="https://www.jonrubra.com/index.html" style="color: #d47611; text-decoration: none; font-family: 'Lora', serif !important;">An app by Jon Rubra</a>
         </p>
         {% block footer_content %}{% endblock %}
     </footer>

@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -258,6 +260,7 @@
         footer a {
             color: white;
             text-decoration: underline;
+            font-family: 'Lora', serif !important;
         }
         .no-results {
             text-align: center;
@@ -390,7 +393,7 @@
     </div>
     <footer>
         <p>
-            <a href="https://www.jonrubra.com/index.html">A Jon Rubra app</a>
+            <a href="https://www.jonrubra.com/index.html" style="font-family: 'Lora', serif !important;">An app by Jon Rubra</a>
         </p>
     </footer>
 </body>

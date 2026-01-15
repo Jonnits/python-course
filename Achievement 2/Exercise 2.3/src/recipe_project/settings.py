@@ -26,7 +26,12 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-_prrviz2w4^)k*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'recipeproject.herokuapp.com',
+    'recipeproject-948ae1464a4d.herokuapp.com',
+]
 
 
 # Application definition
@@ -38,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',  # Must be before 'django.contrib.staticfiles' in some cases, but after is fine here
+    'cloudinary',
     #recipe-project-related apps
     'recipes.apps.RecipesConfig',
     'ingredients.apps.IngredientsConfig',
@@ -121,11 +128,38 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 # The absolute path to the directory where collectstatic will collect static files for deployment.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Additional locations of static files
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
-# Media files (User uploaded files)
+# Media files (User uploaded files) - Using Cloudinary
+try:
+    import cloudinary
+    import cloudinary.uploader
+    import cloudinary.api
+    
+    # Only configure Cloudinary if credentials are provided
+    cloud_name = os.environ.get('CLOUDINARY_CLOUD_NAME', '')
+    if cloud_name:
+        cloudinary.config(
+            cloud_name=cloud_name,
+            api_key=os.environ.get('CLOUDINARY_API_KEY', ''),
+            api_secret=os.environ.get('CLOUDINARY_API_SECRET', ''),
+            secure=True
+        )
+        # Use Cloudinary for media files
+        DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    else:
+        # Fallback to local storage if Cloudinary not configured
+        DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+except ImportError:
+    # Cloudinary not installed, use local storage
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

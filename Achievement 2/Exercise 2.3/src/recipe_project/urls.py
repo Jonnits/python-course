@@ -15,6 +15,13 @@ urlpatterns = [
     path('', include('recipes.urls')),
 ]
 
-# Serve media files during development
+# Serve media files in both development and production
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # In production, serve media files using Django's static view
+    from django.views.static import serve
+    from django.urls import re_path
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    ]
